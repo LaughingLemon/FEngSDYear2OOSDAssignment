@@ -2,6 +2,7 @@ package test;
 
 import bromley.bopak3.server.EnvironmentData;
 import bromley.bopak3.server.EnvironmentDataReader;
+import bromley.bopak3.server.EnvironmentDataReaderInterface;
 
 import java.io.StringReader;
 import java.text.ParseException;
@@ -13,7 +14,7 @@ public class EnvironmentDataReaderTest {
 
         StringReader sr = new StringReader("Time,Temp,Solar,Wind\n" +
                 "00:00:00,-142.5953,9600,4.354906");
-        EnvironmentDataReader dr = new EnvironmentDataReader();
+        EnvironmentDataReaderInterface dr = new EnvironmentDataReader();
         dr.loadDataSource(sr);
 
         EnvironmentData dataObj;
@@ -33,7 +34,7 @@ public class EnvironmentDataReaderTest {
         StringReader sr = new StringReader("Time,Temp,Solar,Wind\n" +
                 "00:00:00,-142.5953,9600,4.354906\n" +
                 "00:01:00,-142.5981,9600,257.802553");
-        EnvironmentDataReader dr = new EnvironmentDataReader();
+        EnvironmentDataReaderInterface dr = new EnvironmentDataReader();
         dr.loadDataSource(sr);
 
         EnvironmentData dataObj;
@@ -58,7 +59,7 @@ public class EnvironmentDataReaderTest {
                 "00:01:00,-142.5981,9600,257.802553\n" +
                 "00:02:00,-142.6047,9600,28.508035\n" +
                 "00:03:00,-142.613,9600,34.62416");
-        EnvironmentDataReader dr = new EnvironmentDataReader();
+        EnvironmentDataReaderInterface dr = new EnvironmentDataReader();
         dr.loadDataSource(sr);
 
         EnvironmentData dataObj;

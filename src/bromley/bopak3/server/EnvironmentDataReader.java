@@ -9,13 +9,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-public class EnvironmentDataReader {
+public class EnvironmentDataReader implements EnvironmentDataReaderInterface {
 
     private List<EnvironmentData> dataList = new ArrayList<EnvironmentData>();
     private EnvironmentTime timeParser = new EnvironmentTime();
 
     private int currentIndex = -1;
 
+    @Override
     public void loadDataSource(Reader dataReader) {
         Scanner fileScanner = new Scanner(dataReader);
         fileScanner.useDelimiter("[,\n]");
@@ -37,6 +38,7 @@ public class EnvironmentDataReader {
         }
     }
 
+    @Override
     public EnvironmentData getNextEnvironmentData() {
         if(currentIndex < dataList.size() - 1) {
             currentIndex++;
@@ -46,6 +48,7 @@ public class EnvironmentDataReader {
         return dataList.get(currentIndex);
     }
 
+    @Override
     public EnvironmentData getEnvironmentDataAtTime(Date time) {
         currentIndex = -1;
         for(EnvironmentData dataObj: dataList) {
@@ -57,6 +60,7 @@ public class EnvironmentDataReader {
         return null;
     }
 
+    @Override
     public EnvironmentData getEnvironmentDataAtTime(String timString) throws ParseException {
        return getEnvironmentDataAtTime(timeParser.stringToTime(timString));
     }
