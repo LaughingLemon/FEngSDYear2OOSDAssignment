@@ -10,10 +10,9 @@ public class EnvironmentTimeTest {
         System.out.println("testParseFromToString start");
 
         //simple test to make sure that the time can be parsed and converted back
-        EnvironmentTime timeParser = new EnvironmentTime();
         try {
-            System.out.println(timeParser.timeToString(timeParser.stringToTime("00:00:00")));
-            System.out.println(timeParser.timeToString(timeParser.stringToTime("23:59:00")));
+            System.out.println(EnvironmentTime.timeToString(EnvironmentTime.stringToTime("00:00:00")));
+            System.out.println(EnvironmentTime.timeToString(EnvironmentTime.stringToTime("23:59:00")));
         } catch(ParseException e) {
             e.printStackTrace();
         }

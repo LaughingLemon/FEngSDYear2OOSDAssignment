@@ -8,13 +8,13 @@ public class EnvironmentTime {
     //simple wrapper around the SimpleDateFormat to just be able to parse
     //time
 
-    private SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+    private static SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
 
-    public Date stringToTime(String timeString) throws ParseException {
+    public static Date stringToTime(String timeString) throws ParseException {
         return formatter.parse(timeString);
     }
 
-    public String timeToString(Date time) {
+    public static String timeToString(Date time) {
         return formatter.format(time);
     }
 

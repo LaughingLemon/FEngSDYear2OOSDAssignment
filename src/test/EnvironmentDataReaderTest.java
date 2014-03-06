@@ -5,7 +5,6 @@ import bromley.bopak3.server.EnvironmentDataReader;
 import bromley.bopak3.server.EnvironmentDataReaderInterface;
 
 import java.io.StringReader;
-import java.text.ParseException;
 
 public class EnvironmentDataReaderTest {
 
@@ -64,12 +63,8 @@ public class EnvironmentDataReaderTest {
 
         EnvironmentData dataObj;
         //should be the data for 00:02:00
-        try {
-            dataObj = dr.getEnvironmentDataAtTime("00:02:00");
-            outputEnvironmentData(dataObj);
-        } catch(ParseException e) {
-            e.printStackTrace();
-        }
+        dataObj = dr.getEnvironmentDataAtTime("00:02:00");
+        outputEnvironmentData(dataObj);
         //should be the data for 00:03:00
         dataObj = dr.getNextEnvironmentData();
         outputEnvironmentData(dataObj);

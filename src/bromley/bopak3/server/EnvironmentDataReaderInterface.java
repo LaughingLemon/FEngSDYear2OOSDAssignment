@@ -1,12 +1,9 @@
 package bromley.bopak3.server;
 
 import java.io.Reader;
-import java.text.ParseException;
 import java.util.Date;
 
-/**
- * Created by Shaun on 05/03/14.
- */
+//Created by Shaun
 public interface EnvironmentDataReaderInterface {
     void loadDataSource(Reader dataReader);
 
@@ -14,5 +11,5 @@ public interface EnvironmentDataReaderInterface {
 
     EnvironmentData getEnvironmentDataAtTime(Date time);
 
-    EnvironmentData getEnvironmentDataAtTime(String timString) throws ParseException;
+    EnvironmentData getEnvironmentDataAtTime(String timString);
 }
