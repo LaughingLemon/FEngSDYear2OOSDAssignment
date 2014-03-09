@@ -20,9 +20,16 @@ public class EnvironmentTimeTest {
         System.out.println("testParseFromToString end");
     }
 
+    private static void testGetCurrentPST() {
+        System.out.println("testGetCurrentPST start");
+        System.out.println("Time: " + EnvironmentTime.timeInPST(EnvironmentTime.getCurrentTime()));
+        System.out.println("testGetCurrentPST end");
+    }
+
     public static void main(String[] args) {
         System.out.println("EnvironmentTimeTest start");
         testParseFromToString();
+        testGetCurrentPST();
         System.out.println("EnvironmentTimeTest end");
     }
 
