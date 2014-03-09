@@ -3,7 +3,6 @@ package bromley.bopak3.server;
 import bromley.bopak3.common.EnvironmentTime;
 
 import java.io.Reader;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,19 +31,20 @@ public class EnvironmentDataReader implements EnvironmentDataReaderInterface {
         while(fileScanner.hasNext()) {
             //create an new data object
             EnvironmentData dataObj = new EnvironmentData();
-            try {
-                //set the various values
-                dataObj.setTimeStamp(EnvironmentTime.stringToTime(fileScanner.next()));
-                dataObj.setOutdoorTemperature(fileScanner.nextDouble());
-                dataObj.setSolarPanelOutput(fileScanner.nextDouble());
-                dataObj.setWindTurbineOutput(fileScanner.nextDouble());
-            } catch(ParseException e) {
-                //in case we can't parse the date
-                e.printStackTrace();
-            }
+            //set the various values
+            dataObj.setTimeStamp(EnvironmentTime.stringToTime(fileScanner.next()));
+            dataObj.setOutdoorTemperature(fileScanner.nextDouble());
+            dataObj.setSolarPanelOutput(fileScanner.nextDouble());
+            dataObj.setWindTurbineOutput(fileScanner.nextDouble());
             //add the object to the list
             dataList.add(dataObj);
         }
+    }
+
+
+    public EnvironmentData getEnvironmentData() {
+        //return the saved object
+        return dataList.get(currentIndex);
     }
 
     public EnvironmentData getNextEnvironmentData() {
@@ -56,7 +56,7 @@ public class EnvironmentDataReader implements EnvironmentDataReaderInterface {
             currentIndex = 0;
         }
         //return the saved object
-        return dataList.get(currentIndex);
+        return getEnvironmentData();
     }
 
     public EnvironmentData getEnvironmentDataAtTime(Date time) {
@@ -67,7 +67,7 @@ public class EnvironmentDataReader implements EnvironmentDataReaderInterface {
             currentIndex++;
             //until we find the one for that time
             if(dataObj.getTimeStamp().equals(time)) {
-                return dataObj;
+                return getEnvironmentData();
             }
         }
         //if we can't find the right one, return null
@@ -75,14 +75,8 @@ public class EnvironmentDataReader implements EnvironmentDataReaderInterface {
     }
 
     public EnvironmentData getEnvironmentDataAtTime(String timeString) {
-        Date time = null;
-        try {
-            //convert string to time
-            time = EnvironmentTime.stringToTime(timeString);
-        } catch(ParseException e) {
-            //trap the exception, if it happens
-            e.printStackTrace();
-        }
+        //convert string to time
+        Date time = EnvironmentTime.stringToTime(timeString);
         //as above, but using a string input
         return getEnvironmentDataAtTime(time);
     }

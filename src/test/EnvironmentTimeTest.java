@@ -2,7 +2,7 @@ package test;
 
 import bromley.bopak3.common.EnvironmentTime;
 
-import java.text.ParseException;
+import java.util.Date;
 
 public class EnvironmentTimeTest {
 
@@ -10,19 +10,17 @@ public class EnvironmentTimeTest {
         System.out.println("testParseFromToString start");
 
         //simple test to make sure that the time can be parsed and converted back
-        try {
-            System.out.println(EnvironmentTime.timeToString(EnvironmentTime.stringToTime("00:00:00")));
-            System.out.println(EnvironmentTime.timeToString(EnvironmentTime.stringToTime("23:59:00")));
-        } catch(ParseException e) {
-            e.printStackTrace();
-        }
+        System.out.println(EnvironmentTime.timeToString(EnvironmentTime.stringToTime("00:00:00")));
+        System.out.println(EnvironmentTime.timeToString(EnvironmentTime.stringToTime("23:59:00")));
 
         System.out.println("testParseFromToString end");
     }
 
     private static void testGetCurrentPST() {
         System.out.println("testGetCurrentPST start");
-        System.out.println("Time: " + EnvironmentTime.timeInPST(EnvironmentTime.getCurrentTime()));
+        Date currentTime = EnvironmentTime.getCurrentTime();
+        System.out.println("Time: " + currentTime);
+        System.out.println("Time: " + EnvironmentTime.timeInEnvironment(currentTime));
         System.out.println("testGetCurrentPST end");
     }
 

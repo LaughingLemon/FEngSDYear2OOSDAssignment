@@ -13,8 +13,14 @@ public class EnvironmentTime {
 
     private static SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
 
-    public static Date stringToTime(String timeString) throws ParseException {
-        return formatter.parse(timeString);
+    public static Date stringToTime(String timeString) {
+        Date returnDate = null;
+        try {
+            returnDate = formatter.parse(timeString);
+        } catch(ParseException e) {
+            e.printStackTrace();
+        }
+        return returnDate;
     }
 
     public static String timeToString(Date time) {
@@ -45,24 +51,17 @@ public class EnvironmentTime {
         return toNearestWholeMinute(new Date());
     }
 
-    public static Date timeInPST(Date time) {
+    public static String timeInEnvironment(Date time) {
         //save the current time zone
         TimeZone timeZone = formatter.getTimeZone();
         //change the time zone to Pacific Standard Time (U.S.)
-        formatter.setTimeZone(TimeZone.getTimeZone("PST"));
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT-8:00"));
         //convert the time to a string, which will be in PST
         String timeStr = formatter.format(time);
         //reset the time zone
         formatter.setTimeZone(timeZone);
-        Date result = null;
-        try {
-            //convert the time to a string
-            result = formatter.parse(timeStr);
-        } catch(ParseException e) {
-            e.printStackTrace();
-        }
-        //and return it
-        return result;
+        //and return the time as a string
+        return timeStr;
     }
 
 }
