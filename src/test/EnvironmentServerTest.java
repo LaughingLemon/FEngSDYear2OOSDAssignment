@@ -3,6 +3,7 @@ package test;
 import bromley.bopak3.common.EnvironmentSocketEvent;
 import bromley.bopak3.common.EnvironmentSocketMessage;
 import bromley.bopak3.common.EnvironmentTemperature;
+import bromley.bopak3.common.EnvironmentTime;
 import bromley.bopak3.server.*;
 
 import java.io.StringReader;
@@ -64,16 +65,14 @@ public class EnvironmentServerTest {
         EnvironmentDataReaderInterface dr = new EnvironmentDataReader();
         dr.loadDataSource(sr);
         EnvironmentCalculations calculations = new EnvironmentCalculations();
-        EnvironmentServer server = new EnvironmentServer(dr, mss, calculations);
+        EnvironmentServer server = new EnvironmentServer(dr, mss, calculations, 5);
         //set the required temperature and the initial temperature
         server.setRequestedIndoorTemperature(EnvironmentTemperature.celsiusToFahrenheit(20.0));
         server.setIndoorTemperature(EnvironmentTemperature.celsiusToFahrenheit(20.0));
         server.startClock();
-        for(int i = 0; i < 5; i++) {
-            outputServer(server);
-            delay(60);
-        }
-        outputServer(server);
+        delay(60);
+        server.setTempControlSwitchedOn(true);
+        delay(60);
         //shut everything down
         server.stopClock();
         System.out.println("testServerMessages end");
@@ -84,6 +83,7 @@ public class EnvironmentServerTest {
         MockEnvironmentSocketServer mss = new MockEnvironmentSocketServer();
         //doesn't need the data reader
         EnvironmentServer server = new EnvironmentServer(null, mss, null);
+        server.setCurrentTime(EnvironmentTime.stringToTime("00:00:00"));
         //the default is off
         System.out.println("server control setting: " + server.isTempControlSwitchedOn());
         System.out.println("server indoor temp: " + server.getIndoorTemperature());
@@ -98,14 +98,6 @@ public class EnvironmentServerTest {
         System.out.println("server control setting: " + server.isTempControlSwitchedOn());
         System.out.println("server indoor temp: " + server.getIndoorTemperature());
         System.out.println("testClientMessages end");
-    }
-
-    private static void outputServer(EnvironmentServer server) {
-        //simple output function to save typing
-        System.out.println("TimeStamp: " + server.getCurrentTime());
-        System.out.println("Outdoor Temperature: " + server.getOutdoorTemperature());
-        System.out.println("Solar Panel Output: " + server.getSolarPanelOutput());
-        System.out.println("Wind Turbine Output: " + server.getWindTurbineOutput());
     }
 
     public static void main(String[] args) {

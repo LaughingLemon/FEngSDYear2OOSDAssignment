@@ -31,6 +31,8 @@ public class EnvironmentServer {
     private double temperatureLoss = 0.0;
     private double requestedIndoorTemperature = 0.0;
 
+    private int timeInterval = 60;
+
     //getters and setters
     public Date getCurrentTime() {
         return currentTime;
@@ -114,23 +116,52 @@ public class EnvironmentServer {
         this.requestedIndoorTemperature = requestedIndoorTemperature;
     }
 
-    //constructor
+    public int getTimeInterval() {
+        return timeInterval;
+    }
+
+    public void setTimeInterval(int timeInterval) {
+        this.timeInterval = timeInterval;
+    }
+
+    //handler object for messages from the clients
+    private EnvironmentSocketEvent messageHandler = new EnvironmentSocketEvent() {
+        public void messageReceived(EnvironmentSocketMessage e) {
+            //split the message into two parts (if there are...)
+            String[] messages = e.getMessage().split(",");
+            //the first bit indicates whether to switch the temperature control
+            //on or off
+            setTempControlSwitchedOn(messages[0].equals("ON"));
+            //and if it's on...
+            if(isTempControlSwitchedOn())
+                //set the temperature level
+                setRequestedIndoorTemperature(Double.parseDouble(messages[1]));
+            //echo back the current environment variables
+            socketServer.sendMessage(environmentDataAsString());
+        }
+    };
+
+    //constructor with dependency injected objects
     public EnvironmentServer(EnvironmentDataReaderInterface dataReader,
                              EnvironmentSocketServerInterface socketServer,
                              EnvironmentCalculations calculations) {
+        //call the other constructor with a minute interval
+        this(dataReader, socketServer, calculations, 60);
+    }
+
+    //constructor with dependency injected objects
+    public EnvironmentServer(EnvironmentDataReaderInterface dataReader,
+                             EnvironmentSocketServerInterface socketServer,
+                             EnvironmentCalculations calculations,
+                             int timeInterval) {
         this.dataReader = dataReader;
         this.socketServer = socketServer;
         //message handler to be able to set the temperature
         //and switch on
-        this.socketServer.setMessageHandler(new EnvironmentSocketEvent() {
-            public void messageReceived(EnvironmentSocketMessage e) {
-                String[] messages = e.getMessage().split(",");
-                setTempControlSwitchedOn(messages[0].equals("ON"));
-                if(isTempControlSwitchedOn())
-                    setRequestedIndoorTemperature(Double.parseDouble(messages[1]));
-            }
-        });
+        this.socketServer.setMessageHandler(messageHandler);
         this.calculations = calculations;
+        //set the time interval
+        setTimeInterval(timeInterval);
     }
 
     //manages network connections
@@ -140,10 +171,11 @@ public class EnvironmentServer {
     Timer clock = new Timer();
 
     //interval is a minute
-    private static final int CLOCK_INTERVAL = 60 * 1000;
+    private static final int SECOND_INTERVAL = 1000;
     //delay is zero
     private static final int CLOCK_DELAY = 0;
 
+    //tast run by the timer (effectively a thread)
     private class DataChange extends TimerTask {
         public void run() {
             //get the values from the reader
@@ -153,7 +185,9 @@ public class EnvironmentServer {
             setOutdoorTemperature(dataObj.getOutdoorTemperature());
             setSolarPanelOutput(dataObj.getSolarPanelOutput());
             setWindTurbineOutput(dataObj.getWindTurbineOutput());
+            //the new indoor temperature is the old minus the temperature loss
             setIndoorTemperature(getIndoorTemperature() - getTemperatureLoss());
+            //calculate the environment statistics
             calculateEnvironmentStats();
             //send the data via the socket
             socketServer.sendMessage(environmentDataAsString());
@@ -182,7 +216,7 @@ public class EnvironmentServer {
         //kicks off the network socket process
         socketServer.start();
         //kicks off the clock process
-        clock.schedule(new DataChange(), CLOCK_DELAY, CLOCK_INTERVAL);
+        clock.schedule(new DataChange(), CLOCK_DELAY, getTimeInterval() * SECOND_INTERVAL);
         //slight delay to allow the data to be read
         slightSleep(250);
     }
@@ -217,6 +251,8 @@ public class EnvironmentServer {
         EnvironmentDataReader dataReader = new EnvironmentDataReader();
         //...and load the file
         dataReader.loadDataSource(fileReader);
+        //sets the data reader to read the PST time data
+        dataReader.getEnvironmentDataAtTime(EnvironmentTime.timeInEnvironment(EnvironmentTime.getCurrentTime()));
         //create the calculations object
         EnvironmentCalculations calculations = new EnvironmentCalculations();
         //create the server
