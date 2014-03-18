@@ -42,6 +42,7 @@ public class EnvironmentSocketServer extends Thread implements EnvironmentSocket
                         EnvironmentSocketThread socketThread = new EnvironmentSocketThread(socket);
                         //wire the socket event to this class's event handler
                         socketThread.setMessageHandler(messageHandler);
+                        socketThread.connect();
                         socketList.add(socketThread);
                     } catch(IOException e) {
                         // if it fails close the socket

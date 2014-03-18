@@ -3,7 +3,7 @@ package bromley.bopak3.server;
 import java.io.Reader;
 import java.util.Date;
 
-//Created by Shaun
+//interface for the data reader (allows better unit testing)
 public interface EnvironmentDataReaderInterface {
     void loadDataSource(Reader dataReader);
 

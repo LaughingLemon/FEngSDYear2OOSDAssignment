@@ -26,6 +26,7 @@ public class EnvironmentServer {
     private double solarPanelOutput = 0.0;
     private double windTurbineOutput = 0.0;
     private boolean tempControlSwitchedOn = false;
+    private boolean windowTintOn = false;
 
     private double powerConsumption = 0.0;
     private double temperatureLoss = 0.0;
@@ -75,13 +76,16 @@ public class EnvironmentServer {
     }
 
     private String environmentDataAsString() {
+        //utility function to package the environment data as a string
+        //for sending via the network socket
         DecimalFormat decimalFormat = new DecimalFormat("0.0#");
         return (isTempControlSwitchedOn() ? "ON" : "OFF") + "," +
                 EnvironmentTime.timeToString(getCurrentTime()) + "," +
                 decimalFormat.format(getIndoorTemperature()) + "," +
                 decimalFormat.format(getOutdoorTemperature()) + "," +
                 decimalFormat.format(getPowerConsumption()) + "," +
-                decimalFormat.format(getTotalPowerProduction());
+                decimalFormat.format(getTotalPowerProduction()) + "," +
+                (isWindowTintOn() ? "ON" : "OFF");
     }
 
     public boolean isTempControlSwitchedOn() {
@@ -124,6 +128,14 @@ public class EnvironmentServer {
         this.timeInterval = timeInterval;
     }
 
+    public boolean isWindowTintOn() {
+        return windowTintOn;
+    }
+
+    public void setWindowTintOn(boolean windowTintOn) {
+        this.windowTintOn = windowTintOn;
+    }
+
     //handler object for messages from the clients
     private EnvironmentSocketEvent messageHandler = new EnvironmentSocketEvent() {
         public void messageReceived(EnvironmentSocketMessage e) {
@@ -136,6 +148,8 @@ public class EnvironmentServer {
             if(isTempControlSwitchedOn())
                 //set the temperature level
                 setRequestedIndoorTemperature(Double.parseDouble(messages[1]));
+            //set the window tint
+            setWindowTintOn(messages[2].equals("ON"));
             //echo back the current environment variables
             socketServer.sendMessage(environmentDataAsString());
         }
@@ -175,7 +189,7 @@ public class EnvironmentServer {
     //delay is zero
     private static final int CLOCK_DELAY = 0;
 
-    //tast run by the timer (effectively a thread)
+    //task run by the timer (effectively a thread)
     private class DataChange extends TimerTask {
         public void run() {
             //get the values from the reader
@@ -194,6 +208,7 @@ public class EnvironmentServer {
         }
     }
 
+    //utility function that just sums the power generators
     private double getTotalPowerProduction() {
         return getSolarPanelOutput() + getWindTurbineOutput();
     }

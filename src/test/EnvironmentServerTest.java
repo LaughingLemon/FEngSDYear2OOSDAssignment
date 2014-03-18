@@ -87,16 +87,19 @@ public class EnvironmentServerTest {
         //the default is off
         System.out.println("server control setting: " + server.isTempControlSwitchedOn());
         System.out.println("server indoor temp: " + server.getIndoorTemperature());
+        System.out.println("server window tint: " + server.isWindowTintOn());
         //the command goes in here...
-        mss.receiveMessage("ON,23.0");
+        mss.receiveMessage("ON,23.0,OFF");
         //...and should come out here
         System.out.println("server control setting: " + server.isTempControlSwitchedOn());
         System.out.println("server indoor temp: " + server.getIndoorTemperature());
+        System.out.println("server window tint: " + server.isWindowTintOn());
         //and switch it off again
-        mss.receiveMessage("OFF");
+        mss.receiveMessage("OFF,0.0,ON");
         //the temperature should be the same as before
         System.out.println("server control setting: " + server.isTempControlSwitchedOn());
         System.out.println("server indoor temp: " + server.getIndoorTemperature());
+        System.out.println("server window tint: " + server.isWindowTintOn());
         System.out.println("testClientMessages end");
     }
 

@@ -3,6 +3,7 @@ package bromley.bopak3.server;
 
 import bromley.bopak3.common.EnvironmentSocketEvent;
 
+//interface to the socket server (allows better util testing)
 public interface EnvironmentSocketServerInterface {
     void setMessageHandler(EnvironmentSocketEvent messageHandler);
 

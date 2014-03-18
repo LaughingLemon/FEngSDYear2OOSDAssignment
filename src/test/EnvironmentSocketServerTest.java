@@ -27,6 +27,7 @@ public class EnvironmentSocketServerTest {
             Socket s = new Socket("localhost", EnvironmentSocketServer.PORT);
             try {
                 EnvironmentSocketThread client = new EnvironmentSocketThread(s);
+                client.connect();
                 client.sendMessage("This should be read by the server");
                 client.sendMessage("END");
             } finally {
