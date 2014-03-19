@@ -70,7 +70,6 @@ public class EnvironmentSocketServer extends Thread implements EnvironmentSocket
     } //shutdown
 
     public void sendMessage(String message) {
-        System.out.println("EnvironmentSocketServer.sendMessage, " + message);
         //for each of the server connections, send a message
         for(EnvironmentSocketThread socketThread : socketList) {
             socketThread.sendMessage(message);

@@ -15,7 +15,7 @@ public class EnvironmentSocketThread extends Thread {
 
     //network socket
     private Socket socket;
-    //readers and writter used by the socket
+    //readers and writer used by the socket
     private BufferedReader in;
     private PrintWriter out;
 
@@ -97,9 +97,11 @@ public class EnvironmentSocketThread extends Thread {
     public void sendMessage(String message) {
         //send the message to the receiver
         //if the output stream has been set up...
-        if(this.out != null)
+        if(this.out != null) {
             //send the message
+            System.out.println("EnvironmentSocketThread.sendMessage: " + message);
             this.out.println(message);
+        }
     }
 
 }

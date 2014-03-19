@@ -79,72 +79,58 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
         setSize(250, 400);
     }
 
+    //this is a utility function to replace repeated lines of code
+    private Component addComponentToPanel(Component component, Font font, int x, int y, int width, int height, Panel panel) {
+        //set the font
+        component.setFont(font);
+        //set the position and size
+        component.setBounds(x, y, width, height);
+        //add the component to the panel
+        panel.add(component);
+        //return the component, if it needs a reference
+        //this will need to be down cast for specific component types
+        return component;
+    }
+
     private Panel createTemperaturePanel() {
         //setting the layout to null allows the components to
-        //bet set precisely using setBounds (or setLocation)
+        //be set precisely using setBounds (or setLocation)
         Panel temperaturePanel = new Panel(null);
 
         //actual indoor temperature
         //informative label
-        Label indoorTemperatureHeaderLabel = new Label("Indoor Temperature");
-        indoorTemperatureHeaderLabel.setFont(SMALLER_FONT);
-        indoorTemperatureHeaderLabel.setBounds(10, 10, 250, 30);
-        temperaturePanel.add(indoorTemperatureHeaderLabel);
-        //and the temperature display
-        indoorTemperature = new Label("-000");
-        indoorTemperature.setFont(BIG_FONT);
-        indoorTemperature.setBounds(10, 40, 75, 50);
-        temperaturePanel.add(indoorTemperature);
+        addComponentToPanel(new Label("Indoor Temperature"), SMALLER_FONT, 10, 10, 250, 30, temperaturePanel);
+        //and the temperature display. note the down casting to a label
+        indoorTemperature = (Label) addComponentToPanel(new Label("-000"), BIG_FONT, 10, 40, 75, 50, temperaturePanel);
         //the degree label. Changed when using Celsius
-        Label indoorTemperatureDegrees = new Label("°F");
-        indoorTemperatureDegrees.setFont(STANDARD_FONT);
-        indoorTemperatureDegrees.setBounds(100, 50, 30, 35);
-        temperaturePanel.add(indoorTemperatureDegrees);
+        addComponentToPanel(new Label("°F"), STANDARD_FONT, 100, 50, 30, 35, temperaturePanel);
 
         //outdoor temperature display
         //nice label
-        Label outdoorTemperatureHeaderLabel = new Label("Outdoor Temperature");
-        outdoorTemperatureHeaderLabel.setFont(SMALLER_FONT);
-        outdoorTemperatureHeaderLabel.setBounds(10, 100, 200, 30);
-        temperaturePanel.add(outdoorTemperatureHeaderLabel);
+        addComponentToPanel(new Label("Outdoor Temperature"), SMALLER_FONT, 10, 100, 200, 30, temperaturePanel);
         //and the display itself
-        outdoorTemperature = new Label("-000");
-        outdoorTemperature.setFont(BIG_FONT);
-        outdoorTemperature.setBounds(10, 130, 75, 50);
-        temperaturePanel.add(outdoorTemperature);
+        outdoorTemperature = (Label) addComponentToPanel(new Label("-000"), BIG_FONT, 10, 130, 75, 50, temperaturePanel);
         //and the degree type label
-        Label outdoorTemperatureDegrees = new Label("°F");
-        outdoorTemperatureDegrees.setFont(STANDARD_FONT);
-        outdoorTemperatureDegrees.setBounds(100, 140, 30, 35);
-        temperaturePanel.add(outdoorTemperatureDegrees);
+        addComponentToPanel(new Label("°F"), STANDARD_FONT, 100, 140, 30, 35, temperaturePanel);
 
         //required temperature display
         //header label
-        Label temperatureRequiredHeader = new Label("Set Temperature");
-        temperatureRequiredHeader.setFont(SMALLER_FONT);
-        temperatureRequiredHeader.setBounds(10, 190, 150, 30);
-        temperaturePanel.add(temperatureRequiredHeader);
+        addComponentToPanel(new Label("Set Temperature"), SMALLER_FONT, 10, 190, 150, 30, temperaturePanel);
         //display itself
-        temperatureRequired = new Label("00");
-        temperatureRequired.setFont(BIG_FONT);
-        temperatureRequired.setBounds(10, 220, 45, 50);
-        temperaturePanel.add(temperatureRequired);
-        //button for increasing the set temperature
-        Button temperatureUp = new Button("UP");
-        temperatureUp.setFont(SMALLER_FONT);
+        temperatureRequired = (Label) addComponentToPanel(new Label("00"), BIG_FONT, 10, 220, 45, 50, temperaturePanel);
+        //button for increasing the set temperature. note the down casting to a button
+        Button temperatureUp = (Button) addComponentToPanel(new Button("UP"), SMALLER_FONT, 70, 220, 80, 30, temperaturePanel);
         temperatureUp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //when the button is clicked, decrement the temperature
+                //when the button is clicked, increment the temperature
                 setRequiredTemperature(getRequiredTemperature() + 1);
                 //set the required temperature display
                 temperatureRequired.setText(DECIMAL_FORMAT.format(getRequiredTemperature()));
             }
         });
-        temperatureUp.setBounds(70, 220, 80, 30);
         temperaturePanel.add(temperatureUp);
         //button for decreasing the set temperature
-        Button temperatureDown = new Button("DOWN");
-        temperatureDown.setFont(SMALLER_FONT);
+        Button temperatureDown = (Button) addComponentToPanel(new Button("DOWN"), SMALLER_FONT, 70, 250, 80, 30, temperaturePanel);
         temperatureDown.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //when the button is clicked, decrement the temperature
@@ -153,19 +139,14 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
                 temperatureRequired.setText(DECIMAL_FORMAT.format(getRequiredTemperature()));
             }
         });
-        temperatureDown.setBounds(70, 250, 80, 30);
-        temperaturePanel.add(temperatureDown);
         //button to send the temperature data to the server
-        Button temperatureSet = new Button("SET");
-        temperatureSet.setFont(STANDARD_FONT);
+        Button temperatureSet = (Button) addComponentToPanel(new Button("SET"), STANDARD_FONT, 150, 220, 75, 60, temperaturePanel);
         temperatureSet.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //uses the base class message sender function
                 sendMessage();
             }
         });
-        temperatureSet.setBounds(150, 220, 75, 60);
-        temperaturePanel.add(temperatureSet);
 
         //and return the nicely laid out panel
         return temperaturePanel;
@@ -206,108 +187,69 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
         //contains most of the environment controls
         Panel onOffPanel = new Panel(null);
 
-        Label temperatureControlLabel = new Label("Temperature Control");
-        temperatureControlLabel.setFont(SMALLER_FONT);
-        temperatureControlLabel.setBounds(10, 10, 190, 30);
-        onOffPanel.add(temperatureControlLabel);
+        //create a nice label
+        addComponentToPanel(new Label("Temperature Control"), SMALLER_FONT, 10, 10, 190, 30, onOffPanel);
 
-        onOffSwitch = new Button("On\\Off");
+        //add the temperature control on\off button
+        onOffSwitch = (Button) addComponentToPanel(new Button("On\\Off"), STANDARD_FONT, 10, 40, 110, 110, onOffPanel);
         onOffSwitch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 setControlOn(!isControlOn());
                 sendMessage();
             }
         });
-        onOffSwitch.setFont(STANDARD_FONT);
-        onOffSwitch.setBounds(10, 40, 110, 110);
-        onOffPanel.add(onOffSwitch);
 
-        onLabel = new Label("ON");
-        onLabel.setFont(BIG_FONT);
-        onLabel.setBounds(130, 40, 60, 50);
-        onOffPanel.add(onLabel);
+        //add the feedback labels, indicating whether the setting is on or off
+        onLabel = (Label) addComponentToPanel(new Label("ON"), BIG_FONT, 130, 40, 60, 50, onOffPanel);
+        offLabel = (Label) addComponentToPanel(new Label("OFF"), BIG_FONT, 130, 100, 75, 50, onOffPanel);
 
-        offLabel = new Label("OFF");
-        offLabel.setFont(BIG_FONT);
-        offLabel.setBounds(130, 100, 75, 50);
-        onOffPanel.add(offLabel);
+        //create a nice label for the windows tint
+        addComponentToPanel(new Label("Window Tint"), SMALLER_FONT, 10, 170, 190, 30, onOffPanel);
 
-        Label windowTintLabel = new Label("Window Tint");
-        windowTintLabel.setFont(SMALLER_FONT);
-        windowTintLabel.setBounds(10, 170, 190, 30);
-        onOffPanel.add(windowTintLabel);
-
-        windowTintOnSwitch = new Button("On\\Off");
+        //add the control button for the tint
+        windowTintOnSwitch = (Button) addComponentToPanel(new Button("On\\Off"), STANDARD_FONT, 10, 200, 110, 110, onOffPanel);
         windowTintOnSwitch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 setWindowTintOn(!isWindowTintOn());
                 sendMessage();
             }
         });
-        windowTintOnSwitch.setFont(STANDARD_FONT);
-        windowTintOnSwitch.setBounds(10, 200, 110, 110);
-        onOffPanel.add(windowTintOnSwitch);
 
-        windowTintOnLabel = new Label("ON");
-        windowTintOnLabel.setFont(BIG_FONT);
-        windowTintOnLabel.setBounds(130, 200, 60, 50);
-        onOffPanel.add(windowTintOnLabel);
+        //add feedback labels
+        windowTintOnLabel = (Label) addComponentToPanel(new Label("ON"), BIG_FONT, 130, 200, 60, 50, onOffPanel);
+        windowTintOffLabel = (Label) addComponentToPanel(new Label("OFF"), BIG_FONT, 130, 260, 75, 50, onOffPanel);
 
-        windowTintOffLabel = new Label("OFF");
-        windowTintOffLabel.setFont(BIG_FONT);
-        windowTintOffLabel.setBounds(130, 260, 75, 50);
-        onOffPanel.add(windowTintOffLabel);
-
+        //return the panel to the card layout
         return onOffPanel;
     }
 
     private Panel createPowerPanel() {
+        //contains the power display and the environment time
         Panel powerPanel = new Panel(null);
 
-        Label powerConsumptionHeaderLabel = new Label("Power Consumption");
-        powerConsumptionHeaderLabel.setFont(SMALLER_FONT);
-        powerConsumptionHeaderLabel.setBounds(20, 130, 185, 30);
-        powerPanel.add(powerConsumptionHeaderLabel);
-
-        powerConsumptionDisplay = new Label("9000");
-        powerConsumptionDisplay.setFont(BIG_FONT);
-        powerConsumptionDisplay.setBounds(20, 60, 85, 50);
-        powerPanel.add(powerConsumptionDisplay);
-
-        Label powerConsumptionDisplayLabel = new Label("Watts");
-        powerConsumptionDisplayLabel.setFont(STANDARD_FONT);
-        powerConsumptionDisplayLabel.setBounds(110, 70, 70, 35);
-        powerPanel.add(powerConsumptionDisplayLabel);
-
-        Label powerGenerationHeaderLabel = new Label("Power Generation");
-        powerGenerationHeaderLabel.setFont(SMALLER_FONT);
-        powerGenerationHeaderLabel.setBounds(20, 30, 165, 30);
-        powerPanel.add(powerGenerationHeaderLabel);
-
-        powerGenerationDisplay = new Label("9000");
-        powerGenerationDisplay.setFont(BIG_FONT);
-        powerGenerationDisplay.setBounds(20, 170, 85, 50);
-        powerPanel.add(powerGenerationDisplay);
-
-        Label powerGenerationDisplayLabel = new Label("Watts");
-        powerGenerationDisplayLabel.setFont(STANDARD_FONT);
-        powerGenerationDisplayLabel.setBounds(110, 180, 70, 35);
-        powerPanel.add(powerGenerationDisplayLabel);
-
-        Label environmentTimeLabel = new Label("Environment Time");
-        environmentTimeLabel.setFont(SMALLER_FONT);
-        environmentTimeLabel.setBounds(20, 240, 180, 30);
-        powerPanel.add(environmentTimeLabel);
-
-        currentTimeDisplay = new Label("23:59:59");
-        currentTimeDisplay.setFont(BIG_FONT);
-        currentTimeDisplay.setBounds(20, 270, 150, 50);
-        powerPanel.add(currentTimeDisplay);
-
+        //a nice label
+        addComponentToPanel(new Label("Power Consumption"), SMALLER_FONT, 20, 130, 185, 30, powerPanel);
+        //the power consumption display
+        powerConsumptionDisplay = (Label) addComponentToPanel(new Label("9000"), BIG_FONT, 20, 60, 85, 50, powerPanel);
+        //indicate that this is in watts
+        addComponentToPanel(new Label("Watts"), STANDARD_FONT, 110, 70, 70, 35, powerPanel);
+        //another helpful label
+        addComponentToPanel(new Label("Power Generation"), SMALLER_FONT, 20, 30, 165, 30, powerPanel);
+        //the power generation display
+        powerGenerationDisplay = (Label) addComponentToPanel(new Label("9000"), BIG_FONT, 20, 170, 85, 50, powerPanel);
+        //also in watts
+        addComponentToPanel(new Label("Watts"), STANDARD_FONT, 110, 180, 70, 35, powerPanel);
+        //yet another helpful label
+        addComponentToPanel(new Label("Environment Time"), SMALLER_FONT, 20, 240, 180, 30, powerPanel);
+        //the current time in the environment
+        currentTimeDisplay = (Label) addComponentToPanel(new Label("23:59:59"), BIG_FONT, 20, 270, 150, 50, powerPanel);
+        //and return the panel for display in the card layout
         return powerPanel;
     }
 
     protected void updateDisplay() {
+        //this is where the information from the server is displayed in the screen.
+        //note that this is called in a synchronized function
         onLabel.setForeground(isControlOn() ? Color.green : Color.black);
         offLabel.setForeground(isControlOn() ? Color.black : Color.red);
         windowTintOnLabel.setForeground(isWindowTintOn() ? Color.green : Color.black);
