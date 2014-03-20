@@ -15,6 +15,8 @@ public class TemperatureDisplay extends Panel {
     private LEDPanel tens;
     private LEDPanel units;
 
+    private Label degreeLabel;
+
     private boolean displayInCelsius = false;
 
     public boolean isDisplayInCelsius() {
@@ -37,16 +39,21 @@ public class TemperatureDisplay extends Panel {
         units = new LEDPanel();
         add(units);
         //create a label
-        Label degreeLabel = new Label("\u00B0F");
+        degreeLabel = new Label("\u00B0F");
         degreeLabel.setFont(new Font("Sans-serif", Font.BOLD, 24));
         add(degreeLabel);
     }
 
     public void displayTemperature(Double temp) {
-        temp = isDisplayInCelsius() ? EnvironmentTemperature.fahrenheitToCelsius(temp) : temp;
+        if(isDisplayInCelsius()) {
+            degreeLabel.setText("\u00b0C");
+            temp = EnvironmentTemperature.fahrenheitToCelsius(temp);
+        } else {
+            degreeLabel.setText("\u00b0F");
+        }
         minus.setDisplayNumber(temp < 0 ? -1 : 10);
         hundreds.setDisplayNumber((int) (abs(temp) / 100.0));
-        tens.setDisplayNumber((int) ((abs(temp) / 10.0) % 100));
+        tens.setDisplayNumber((int) ((abs(temp) / 10.0) % 10));
         units.setDisplayNumber((int) (abs(temp) % 10));
     }
 }

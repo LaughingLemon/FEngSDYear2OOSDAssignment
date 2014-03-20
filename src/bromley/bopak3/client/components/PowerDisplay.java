@@ -36,8 +36,8 @@ public class PowerDisplay extends Panel {
     public void displayPower(Double power) {
         //divide the power up into distinct digits for display
         thousands.setDisplayNumber((int) (abs(power) / 1000.0));
-        hundreds.setDisplayNumber((int) ((abs(power) / 100.0) % 1000));
-        tens.setDisplayNumber((int) ((abs(power) / 10.0) % 100));
+        hundreds.setDisplayNumber((int) ((abs(power) / 100.0) % 10));
+        tens.setDisplayNumber((int) ((abs(power) / 10.0) % 10));
         units.setDisplayNumber((int) (abs(power) % 10));
     }
 }
