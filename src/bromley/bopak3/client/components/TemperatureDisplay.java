@@ -45,12 +45,8 @@ public class TemperatureDisplay extends Panel {
     }
 
     public void displayTemperature(Double temp) {
-        if(isDisplayInCelsius()) {
-            degreeLabel.setText("\u00b0C");
-            temp = EnvironmentTemperature.fahrenheitToCelsius(temp);
-        } else {
-            degreeLabel.setText("\u00b0F");
-        }
+        degreeLabel.setText(isDisplayInCelsius() ? "\u00b0C" : "\u00b0F");
+        temp = isDisplayInCelsius() ? EnvironmentTemperature.fahrenheitToCelsius(temp) : temp;
         minus.setDisplayNumber(temp < 0 ? -1 : 10);
         hundreds.setDisplayNumber((int) (abs(temp) / 100.0));
         tens.setDisplayNumber((int) ((abs(temp) / 10.0) % 10));
