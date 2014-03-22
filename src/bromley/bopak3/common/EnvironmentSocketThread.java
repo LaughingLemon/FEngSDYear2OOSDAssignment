@@ -1,10 +1,8 @@
 package bromley.bopak3.common;
-//Created by Shaun
 
 //import various IO and network classes
 
 import java.io.*;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 
 
@@ -18,6 +16,17 @@ public class EnvironmentSocketThread extends Thread {
     //readers and writer used by the socket
     private BufferedReader in;
     private PrintWriter out;
+    //status of socket
+    private boolean connected = false;
+
+    //getter and setter
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
+    }
 
     //allows the communication of messages to other classes
     private EnvironmentSocketEvent messageHandler;
@@ -34,35 +43,61 @@ public class EnvironmentSocketThread extends Thread {
             messageHandler.messageReceived(new EnvironmentSocketMessage(this, message));
     }
 
-    private void createReaderWriter() throws IOException {
+    private void createReaderWriter() {
         //create the input stream reader from the connected socket
-        this.in = new BufferedReader(
-                new InputStreamReader(this.socket.getInputStream())
-        );
-        //create the output stream writer from the connected socket
-        this.out = new PrintWriter(
-                new BufferedWriter(
-                        new OutputStreamWriter(this.socket.getOutputStream())
-                ),
-                true);
+        try {
+            this.in = new BufferedReader(
+                    new InputStreamReader(this.socket.getInputStream())
+            );
+            //create the output stream writer from the connected socket
+            this.out = new PrintWriter(
+                    new BufferedWriter(
+                            new OutputStreamWriter(this.socket.getOutputStream())
+                    ),
+                    true);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void connect() throws IOException {
-        //this assumes that the socket is already connected
-        //create the interfaces
-        createReaderWriter();
-        //kick off the thread
-        start(); // Calls run()
+    public void connect() {
+        if(socket != null && socket.isConnected()) {
+            //this assumes that the socket is already connected
+            //create the interfaces
+            createReaderWriter();
+            //kick off the thread
+            start(); // Calls run()
+            setConnected(true);
+        } else
+            setConnected(false);
     }
 
-    public void connect(String host, int port) throws IOException {
+    public void connect(String host, int port) {
         //if the socket is not connected...
-        if(!socket.isConnected())
-            //establish a connection. Any problems are sent back to the
-            //caller via the exception
-            socket.connect(new InetSocketAddress(host, port));
+        if(socket == null)
+            //try five times
+            for(int i = 0; i < 5; i++) {
+                try {
+                    //establish a connection.
+                    socket = new Socket(host, port);
+                    //if connection is successful
+                    break;
+                } catch(IOException e) {
+                    try {
+                        //wait a second
+                        System.out.println(e.getMessage());
+                        Thread.sleep(1000);
+                    } catch(InterruptedException e1) {
+                        //don't bother
+                    }
+                }
+            }
         //create the interfaces and start the thread
         connect();
+    }
+
+    public EnvironmentSocketThread() {
+        //default constructor
     }
 
     public EnvironmentSocketThread(Socket s) {

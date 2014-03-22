@@ -10,6 +10,9 @@ import static java.lang.Math.abs;
 //convenient function to set the display
 public class TemperatureDisplay extends Panel {
 
+    public static final String DEGREES_C = "\u00b0C";
+    public static final String DEGREES_F = "\u00b0F";
+
     private LEDPanel minus;
     private LEDPanel hundreds;
     private LEDPanel tens;
@@ -39,13 +42,13 @@ public class TemperatureDisplay extends Panel {
         units = new LEDPanel();
         add(units);
         //create a label
-        degreeLabel = new Label("\u00B0F");
+        degreeLabel = new Label(DEGREES_F);
         degreeLabel.setFont(new Font("Sans-serif", Font.BOLD, 24));
         add(degreeLabel);
     }
 
     public void displayTemperature(Double temp) {
-        degreeLabel.setText(isDisplayInCelsius() ? "\u00b0C" : "\u00b0F");
+        degreeLabel.setText(isDisplayInCelsius() ? DEGREES_C : DEGREES_F);
         temp = isDisplayInCelsius() ? EnvironmentTemperature.fahrenheitToCelsius(temp) : temp;
         minus.setDisplayNumber(temp < 0 ? -1 : 10);
         hundreds.setDisplayNumber((int) (abs(temp) / 100.0));

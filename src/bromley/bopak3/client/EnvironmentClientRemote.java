@@ -1,22 +1,20 @@
 package bromley.bopak3.client;
 
+import bromley.bopak3.client.components.TemperatureDisplay;
 import bromley.bopak3.common.EnvironmentSocketThread;
+import bromley.bopak3.common.EnvironmentTemperature;
 import bromley.bopak3.common.EnvironmentTime;
 import bromley.bopak3.server.EnvironmentSocketServer;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.Socket;
 import java.text.DecimalFormat;
 
 public class EnvironmentClientRemote extends EnvironmentClientDisplay {
 
-    //these are the display objects
-    //simple labels and buttons, partly
-    //chosen to contrast with the master display
-    //nice, though
+    //these are the display objects simple labels and buttons, partly
+    //chosen to contrast with the master display. nice, though
     private Button onOffSwitch;
     private Label currentTimeDisplay;
     private Label indoorTemperature;
@@ -29,6 +27,12 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
     private Label windowTintOnLabel;
     private Label windowTintOffLabel;
     private Label temperatureRequired;
+    private TextField serverAddress;
+    private Label indoorTemperatureDegrees;
+    private Label outdoorTemperatureDegrees;
+    private Label degreesLabel;
+
+    private Label connectionLabel;
 
     //constructor
     public EnvironmentClientRemote(EnvironmentSocketThread socketThread) {
@@ -62,6 +66,8 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
         cardLayout = new CardLayout();
         cardPanel = new Panel(cardLayout);
 
+        //add a panel containing the configuration options
+        cardPanel.add(createOptionsPanel(), "Config Options");
         //add a control panel
         cardPanel.add(createOnOffPanel(), "On Off Panel");
         //add the temperature display panel
@@ -79,17 +85,48 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
         setSize(250, 400);
     }
 
-    //this is a utility function to replace repeated lines of code
-    private Component addComponentToPanel(Component component, Font font, int x, int y, int width, int height, Panel panel) {
-        //set the font
-        component.setFont(font);
-        //set the position and size
-        component.setBounds(x, y, width, height);
-        //add the component to the panel
-        panel.add(component);
-        //return the component, if it needs a reference
-        //this will need to be down cast for specific component types
-        return component;
+    private Panel createOptionsPanel() {
+        //displays configuration options
+        Panel optionsPanel = new Panel(null);
+        //server address. the default is localhost
+        serverAddress = (TextField) addComponentToPanel(new TextField("localhost"), STANDARD_FONT, 10, 10, 150, 30, optionsPanel);
+        //clicking on this button causes a connect to the server
+        Button connect = (Button) addComponentToPanel(new Button("Connect"), STANDARD_FONT, 10, 60, 150, 50, optionsPanel);
+        connect.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //connect to server
+                connectionLabel.setForeground(Color.black);
+                getSocketThread().connect(serverAddress.getText(), EnvironmentSocketServer.PORT);
+                if(getSocketThread().isConnected()) {
+                    //indicate success
+                    connectionLabel.setText("Connected");
+                    connectionLabel.setForeground(Color.green);
+                    //and send a message to get a response
+                    sendMessage();
+                } else {
+                    //indicate failure
+                    connectionLabel.setForeground(Color.red);
+                }
+            }
+        });
+        //indicates connection status
+        connectionLabel = (Label) addComponentToPanel(new Label("Disconnected"), STANDARD_FONT,
+                10, 120, 175, 35, optionsPanel);
+
+        Button degrees = (Button) addComponentToPanel(new Button(CELSIUS_FAHRENHEIT_LABEL), STANDARD_FONT,
+                10, 200, 212, 50, optionsPanel);
+        degrees.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                setInCelsius(!isInCelsius());
+                degreesLabel.setText(isInCelsius() ? TemperatureDisplay.DEGREES_C : TemperatureDisplay.DEGREES_F);
+                updateDisplay();
+            }
+        });
+
+        degreesLabel = (Label) addComponentToPanel(new Label(TemperatureDisplay.DEGREES_F), STANDARD_FONT,
+                10, 275, 30, 35, optionsPanel);
+
+        return optionsPanel;
     }
 
     private Panel createTemperaturePanel() {
@@ -103,7 +140,8 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
         //and the temperature display. note the down casting to a label
         indoorTemperature = (Label) addComponentToPanel(new Label("-000"), BIG_FONT, 10, 40, 75, 50, temperaturePanel);
         //the degree label. Changed when using Celsius
-        addComponentToPanel(new Label("°F"), STANDARD_FONT, 100, 50, 30, 35, temperaturePanel);
+        indoorTemperatureDegrees = (Label) addComponentToPanel(new Label(TemperatureDisplay.DEGREES_F), STANDARD_FONT,
+                100, 50, 30, 35, temperaturePanel);
 
         //outdoor temperature display
         //nice label
@@ -111,7 +149,8 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
         //and the display itself
         outdoorTemperature = (Label) addComponentToPanel(new Label("-000"), BIG_FONT, 10, 130, 75, 50, temperaturePanel);
         //and the degree type label
-        addComponentToPanel(new Label("°F"), STANDARD_FONT, 100, 140, 30, 35, temperaturePanel);
+        outdoorTemperatureDegrees = (Label) addComponentToPanel(new Label(TemperatureDisplay.DEGREES_F), STANDARD_FONT,
+                100, 140, 30, 35, temperaturePanel);
 
         //required temperature display
         //header label
@@ -123,9 +162,13 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
         temperatureUp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //when the button is clicked, increment the temperature
-                setRequiredTemperature(getRequiredTemperature() + 1);
+                setRequiredTemperature(getRequiredTemperature() +
+                        (isInCelsius() ? (9 / 5) : 1));
                 //set the required temperature display
-                temperatureRequired.setText(DECIMAL_FORMAT.format(getRequiredTemperature()));
+                temperatureRequired.setText(
+                        DECIMAL_FORMAT.format(isInCelsius() ?
+                                EnvironmentTemperature.fahrenheitToCelsius(getRequiredTemperature()) :
+                                getRequiredTemperature()));
             }
         });
         temperaturePanel.add(temperatureUp);
@@ -134,9 +177,13 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
         temperatureDown.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //when the button is clicked, decrement the temperature
-                setRequiredTemperature(getRequiredTemperature() - 1);
+                setRequiredTemperature(getRequiredTemperature() -
+                        (isInCelsius() ? (9 / 5) : 1));
                 //set the required temperature display
-                temperatureRequired.setText(DECIMAL_FORMAT.format(getRequiredTemperature()));
+                temperatureRequired.setText(
+                        DECIMAL_FORMAT.format(isInCelsius() ?
+                                EnvironmentTemperature.fahrenheitToCelsius(getRequiredTemperature()) :
+                                getRequiredTemperature()));
             }
         });
         //button to send the temperature data to the server
@@ -259,22 +306,25 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
         powerGenerationDisplay.setText(DECIMAL_FORMAT.format(getPowerGenerated()));
         currentTimeDisplay.setText(EnvironmentTime.timeToString(getCurrentTime()));
 
-        outdoorTemperature.setText(DECIMAL_FORMAT.format(getOutdoorTemperature()));
-        indoorTemperature.setText(DECIMAL_FORMAT.format(getIndoorTemperature()));
-        temperatureRequired.setText(DECIMAL_FORMAT.format(getRequiredTemperature()));
+        outdoorTemperatureDegrees.setText(isInCelsius() ? TemperatureDisplay.DEGREES_C : TemperatureDisplay.DEGREES_F);
+        outdoorTemperature.setText(
+                DECIMAL_FORMAT.format(isInCelsius() ?
+                        EnvironmentTemperature.fahrenheitToCelsius(getOutdoorTemperature()) :
+                        getOutdoorTemperature()));
+        indoorTemperatureDegrees.setText(isInCelsius() ? TemperatureDisplay.DEGREES_C : TemperatureDisplay.DEGREES_F);
+        indoorTemperature.setText(
+                DECIMAL_FORMAT.format(isInCelsius() ?
+                        EnvironmentTemperature.fahrenheitToCelsius(getIndoorTemperature()) :
+                        getIndoorTemperature()));
+        temperatureRequired.setText(
+                DECIMAL_FORMAT.format(isInCelsius() ?
+                        EnvironmentTemperature.fahrenheitToCelsius(getRequiredTemperature()) :
+                        getRequiredTemperature()));
     }
 
     public static void main(String[] args) {
-        EnvironmentSocketThread socketThread = null;
-        try {
-            Socket clientSocket = new Socket("localhost", EnvironmentSocketServer.PORT);
-            socketThread = new EnvironmentSocketThread(clientSocket);
-            socketThread.connect();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-        EnvironmentClientRemote clientRemote = new EnvironmentClientRemote(socketThread);
-        clientRemote.sendMessage();
+        EnvironmentSocketThread socketThread = new EnvironmentSocketThread();
+        new EnvironmentClientRemote(socketThread);
     }
 
 }

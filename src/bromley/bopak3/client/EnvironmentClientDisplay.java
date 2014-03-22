@@ -9,8 +9,10 @@ import java.util.Date;
 
 public class EnvironmentClientDisplay extends Frame {
 
+    //labels for different degrees
+    protected static final String CELSIUS_FAHRENHEIT_LABEL = "Celsius\\Fahrenheit";
     //environment variables
-    private Date currentTime;
+    private Date currentTime = EnvironmentTime.stringToTime("00:00:00");
     private double indoorTemperature = 0.0;
     private double outdoorTemperature = 0.0;
     private double powerGenerated = 0.0;
@@ -18,6 +20,7 @@ public class EnvironmentClientDisplay extends Frame {
     private boolean controlOn = true;
     private double requiredTemperature = EnvironmentTemperature.celsiusToFahrenheit(25.0);
     private boolean windowTintOn = false;
+    private boolean inCelsius = false;
 
     //getters and setters for the above
     public Date getCurrentTime() {
@@ -84,6 +87,14 @@ public class EnvironmentClientDisplay extends Frame {
         this.windowTintOn = windowTintOn;
     }
 
+    public boolean isInCelsius() {
+        return inCelsius;
+    }
+
+    public void setInCelsius(boolean inCelsius) {
+        this.inCelsius = inCelsius;
+    }
+
     //visual setup
     protected void setUpWindow() {
         //to be overridden by descendants
@@ -99,8 +110,25 @@ public class EnvironmentClientDisplay extends Frame {
     //allows the client to connect to the server
     private EnvironmentSocketThread socketThread;
 
+    public EnvironmentSocketThread getSocketThread() {
+        return socketThread;
+    }
+
+    //this is a utility function to replace repeated lines of code
+    protected Component addComponentToPanel(Component component, Font font, int x, int y, int width, int height, Panel panel) {
+        //set the font
+        component.setFont(font);
+        //set the position and size
+        component.setBounds(x, y, width, height);
+        //add the component to the panel
+        panel.add(component);
+        //return the component, if it needs a reference
+        //this will need to be down cast for specific component types
+        return component;
+    }
+
     protected void updateDisplay() {
-        //overidden in descendants
+        //overridden in descendants
     }
 
     public void sendMessage() {
