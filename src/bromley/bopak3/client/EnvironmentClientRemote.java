@@ -306,6 +306,7 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
         powerGenerationDisplay.setText(DECIMAL_FORMAT.format(getPowerGenerated()));
         currentTimeDisplay.setText(EnvironmentTime.timeToString(getCurrentTime()));
 
+        //uses the trinary statement (?:) to display either in Fahrenheit or Celsius
         outdoorTemperatureDegrees.setText(isInCelsius() ? TemperatureDisplay.DEGREES_C : TemperatureDisplay.DEGREES_F);
         outdoorTemperature.setText(
                 DECIMAL_FORMAT.format(isInCelsius() ?
