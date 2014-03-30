@@ -1,25 +1,44 @@
-package test;
 //Created by Shaun
 
 import bromley.bopak3.common.EnvironmentTemperature;
 import bromley.bopak3.server.EnvironmentCalculations;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
+import static org.junit.Assert.assertEquals;
+
+@RunWith(JUnit4.class)
 public class EnvironmentCalculationsTest {
 
-    private static void testHeatLossCalculations() {
-        System.out.println("testHeatLossCalculations start");
+    @Test
+    public void testHeatLossCalculations() throws Exception {
         EnvironmentCalculations calculations = new EnvironmentCalculations();
-        System.out.println("Temperature drop: " + calculations.temperatureDropMinute(calculations.heatLoss(EnvironmentTemperature.fahrenheitToCelsius(-142), 25.0)));
-        System.out.println("Temperature drop: " + calculations.temperatureDrop(calculations.heatLoss(EnvironmentTemperature.fahrenheitToCelsius(-142), 25.0), 80 * 60));
+        assertEquals("Temperature drop in one minute", 0.2208,
+                calculations.temperatureDropMinute(
+                        calculations.heatLoss(
+                                EnvironmentTemperature.fahrenheitToCelsius(-142),
+                                25.0)
+                ),
+                0.0001
+        );
+
+        assertEquals("Temperature drop over 80 minutes", 17.669,
+                calculations.temperatureDrop(
+                        calculations.heatLoss(
+                                EnvironmentTemperature.fahrenheitToCelsius(-142),
+                                25.0),
+                        80 * 60
+                ),
+                0.001
+        );
+
         calculations = new EnvironmentCalculations(500, 100, 1000);
-        System.out.println("Temperature drop: " + calculations.temperatureDropMinute(calculations.heatLoss(-100.0, 20.0)));
-        System.out.println("testHeatLossCalculations end");
+        assertEquals("Temperature drop w. different areas\\volume", 0.1116,
+                calculations.temperatureDropMinute(
+                        calculations.heatLoss(-100.0, 20.0)
+                ),
+                0.0001
+        );
     }
-
-    public static void main(String[] args) {
-        System.out.println("EnvironmentCalculationsTest start");
-        testHeatLossCalculations();
-        System.out.println("EnvironmentCalculationsTest end");
-    }
-
 }

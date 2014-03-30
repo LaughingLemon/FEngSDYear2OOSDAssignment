@@ -1,21 +1,35 @@
-package test;
-//Created by Shaun
-
 import bromley.bopak3.common.EnvironmentTemperature;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
+import static org.junit.Assert.assertEquals;
+
+/**
+ * EnvironmentTemperature Tester.
+ *
+ * @author <Authors name>
+ * @version 1.0
+ * @since <pre>Mar 30, 2014</pre>
+ */
+
+@RunWith(JUnit4.class)
 public class EnvironmentTemperatureTest {
 
-    private static void testConversions() {
-        System.out.println("testConversions start");
-        System.out.println("Temp: " + EnvironmentTemperature.celsiusToFahrenheit(EnvironmentTemperature.fahrenheitToCelsius(10)));
-        System.out.println("Temp: " + EnvironmentTemperature.fahrenheitToCelsius(EnvironmentTemperature.celsiusToFahrenheit(10)));
-        System.out.println("testConversions end");
+    /**
+     * Method: fahrenheitToCelsius(double fahrenheit)
+     */
+    @Test
+    public void testFahrenheitToCelsius() throws Exception {
+        assertEquals(-12.22, EnvironmentTemperature.fahrenheitToCelsius(10), 0.2);
     }
 
-    public static void main(String[] args) {
-        System.out.println("EnvironmentTemperatureTest start");
-        testConversions();
-        System.out.println("EnvironmentTemperatureTest end");
+    /**
+     * Method: celsiusToFahrenheit(double celsius)
+     */
+    @Test
+    public void testCelsiusToFahrenheit() throws Exception {
+        assertEquals(50.0, EnvironmentTemperature.celsiusToFahrenheit(10), 0.2);
     }
 
-}
+} 
