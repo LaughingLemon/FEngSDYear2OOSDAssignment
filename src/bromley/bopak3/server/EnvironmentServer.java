@@ -12,6 +12,9 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+//import java.io.InputStream;
+//import java.io.InputStreamReader;
+
 public class EnvironmentServer {
 
     //used to read the data file
@@ -260,6 +263,8 @@ public class EnvironmentServer {
         } catch(FileNotFoundException e) {
             e.printStackTrace();
         }
+        //InputStream resourceStream = EnvironmentServer.class.getResourceAsStream("/data/EnvironmentData.csv");
+        //Reader fileReader = new InputStreamReader(resourceStream);
         //create the network server
         EnvironmentSocketServer socketServer = new EnvironmentSocketServer();
         //create the data reader...
