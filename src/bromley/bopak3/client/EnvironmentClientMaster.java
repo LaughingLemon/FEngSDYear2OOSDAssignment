@@ -5,6 +5,7 @@ package bromley.bopak3.client;
 import bromley.bopak3.client.components.PowerDisplay;
 import bromley.bopak3.client.components.TemperatureDisplay;
 import bromley.bopak3.client.components.TimeDisplay;
+import bromley.bopak3.common.EnvironmentSocketFactoryImpl;
 import bromley.bopak3.common.EnvironmentSocketThread;
 import bromley.bopak3.server.EnvironmentSocketServer;
 import laughing.lemon.components.SwitchEvent;
@@ -148,8 +149,9 @@ public class EnvironmentClientMaster extends EnvironmentClientDisplay {
 
         //set the height and width according to the contained components
         optionsPanel.setSize(Math.max(degreesSetting.getWidth(),
-                connectionLabel.getX() + connectionLabel.getWidth()),
-                degreesLabel.getY() + degreesLabel.getHeight());
+                        connectionLabel.getX() + connectionLabel.getWidth()),
+                degreesLabel.getY() + degreesLabel.getHeight()
+        );
 
         //and return the panel
         return optionsPanel;
@@ -287,8 +289,9 @@ public class EnvironmentClientMaster extends EnvironmentClientDisplay {
     }
 
     public static void main(String[] args) {
+        EnvironmentSocketFactoryImpl socketFactory = new EnvironmentSocketFactoryImpl();
         //create a socket thread component to connect to the server
-        EnvironmentSocketThread socketThread = new EnvironmentSocketThread();
+        EnvironmentSocketThread socketThread = new EnvironmentSocketThread(socketFactory);
         //should work unless the server is down
         socketThread.connect("localhost", EnvironmentSocketServer.PORT);
         //create the master control panel object

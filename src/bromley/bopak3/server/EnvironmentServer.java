@@ -1,9 +1,6 @@
 package bromley.bopak3.server;
 
-import bromley.bopak3.common.EnvironmentSocketEvent;
-import bromley.bopak3.common.EnvironmentSocketMessage;
-import bromley.bopak3.common.EnvironmentTemperature;
-import bromley.bopak3.common.EnvironmentTime;
+import bromley.bopak3.common.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -266,7 +263,8 @@ public class EnvironmentServer {
         //InputStream resourceStream = EnvironmentServer.class.getResourceAsStream("/data/EnvironmentData.csv");
         //Reader fileReader = new InputStreamReader(resourceStream);
         //create the network server
-        EnvironmentSocketServer socketServer = new EnvironmentSocketServer();
+        EnvironmentSocketFactoryImpl socketFactory = new EnvironmentSocketFactoryImpl();
+        EnvironmentSocketServer socketServer = new EnvironmentSocketServer(socketFactory);
         //create the data reader...
         EnvironmentDataReader dataReader = new EnvironmentDataReader();
         //...and load the file

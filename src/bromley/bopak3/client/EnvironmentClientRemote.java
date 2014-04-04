@@ -1,6 +1,7 @@
 package bromley.bopak3.client;
 
 import bromley.bopak3.client.components.TemperatureDisplay;
+import bromley.bopak3.common.EnvironmentSocketFactoryImpl;
 import bromley.bopak3.common.EnvironmentSocketThread;
 import bromley.bopak3.common.EnvironmentTemperature;
 import bromley.bopak3.common.EnvironmentTime;
@@ -168,7 +169,8 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
                 temperatureRequired.setText(
                         DECIMAL_FORMAT.format(isInCelsius() ?
                                 EnvironmentTemperature.fahrenheitToCelsius(getRequiredTemperature()) :
-                                getRequiredTemperature()));
+                                getRequiredTemperature())
+                );
             }
         });
         temperaturePanel.add(temperatureUp);
@@ -183,7 +185,8 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
                 temperatureRequired.setText(
                         DECIMAL_FORMAT.format(isInCelsius() ?
                                 EnvironmentTemperature.fahrenheitToCelsius(getRequiredTemperature()) :
-                                getRequiredTemperature()));
+                                getRequiredTemperature())
+                );
             }
         });
         //button to send the temperature data to the server
@@ -311,20 +314,24 @@ public class EnvironmentClientRemote extends EnvironmentClientDisplay {
         outdoorTemperature.setText(
                 DECIMAL_FORMAT.format(isInCelsius() ?
                         EnvironmentTemperature.fahrenheitToCelsius(getOutdoorTemperature()) :
-                        getOutdoorTemperature()));
+                        getOutdoorTemperature())
+        );
         indoorTemperatureDegrees.setText(isInCelsius() ? TemperatureDisplay.DEGREES_C : TemperatureDisplay.DEGREES_F);
         indoorTemperature.setText(
                 DECIMAL_FORMAT.format(isInCelsius() ?
                         EnvironmentTemperature.fahrenheitToCelsius(getIndoorTemperature()) :
-                        getIndoorTemperature()));
+                        getIndoorTemperature())
+        );
         temperatureRequired.setText(
                 DECIMAL_FORMAT.format(isInCelsius() ?
                         EnvironmentTemperature.fahrenheitToCelsius(getRequiredTemperature()) :
-                        getRequiredTemperature()));
+                        getRequiredTemperature())
+        );
     }
 
     public static void main(String[] args) {
-        EnvironmentSocketThread socketThread = new EnvironmentSocketThread();
+        EnvironmentSocketFactoryImpl socketFactory = new EnvironmentSocketFactoryImpl();
+        EnvironmentSocketThread socketThread = new EnvironmentSocketThread(socketFactory);
         new EnvironmentClientRemote(socketThread);
     }
 

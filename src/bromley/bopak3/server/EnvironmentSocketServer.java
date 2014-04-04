@@ -1,12 +1,9 @@
 package bromley.bopak3.server;
 //Multi-threaded client\server utilising java sockets
 
-import bromley.bopak3.common.EnvironmentSocketEvent;
-import bromley.bopak3.common.EnvironmentSocketThread;
+import bromley.bopak3.common.*;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +18,13 @@ public class EnvironmentSocketServer extends Thread implements EnvironmentSocket
     private List<EnvironmentSocketThread> socketList = new ArrayList<EnvironmentSocketThread>();
 
     //enables the socket to be closed outside of run
-    public ServerSocket serverSocket;
+    public EnvironmentServerSocket serverSocket;
+
+    private EnvironmentSocketFactory socketFactory;
+
+    public EnvironmentSocketServer(EnvironmentSocketFactory socketFactory) {
+        this.socketFactory = socketFactory;
+    }
 
     private EnvironmentSocketEvent messageHandler;
 
@@ -31,14 +34,14 @@ public class EnvironmentSocketServer extends Thread implements EnvironmentSocket
 
     public void run() {
         try {
-            serverSocket = new ServerSocket(PORT);
+            serverSocket = socketFactory.createServerSocket(PORT);
             try {
                 while(!shutThisDown) {
                     // Blocks until a connection occurs
                     //the only way to un-block this
                     //seems to be to close the server socket
-                    Socket socket = serverSocket.accept();
-                    EnvironmentSocketThread socketThread = new EnvironmentSocketThread(socket);
+                    EnvironmentSocket socket = serverSocket.accept();
+                    EnvironmentSocketThread socketThread = new EnvironmentSocketThread(socket, socketFactory);
                     //wire the socket event to this class's event handler
                     socketThread.setMessageHandler(messageHandler);
                     //connect to the client

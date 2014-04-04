@@ -3,7 +3,6 @@ package bromley.bopak3.common;
 //import various IO and network classes
 
 import java.io.*;
-import java.net.Socket;
 
 
 //this class wrappers a network socket in a thread
@@ -12,7 +11,9 @@ import java.net.Socket;
 public class EnvironmentSocketThread extends Thread {
 
     //network socket
-    private Socket socket;
+    private EnvironmentSocket socket;
+    //network socket
+    private EnvironmentSocketFactory socketFactory;
     //readers and writer used by the socket
     private BufferedReader in;
     private PrintWriter out;
@@ -54,7 +55,8 @@ public class EnvironmentSocketThread extends Thread {
                     new BufferedWriter(
                             new OutputStreamWriter(this.socket.getOutputStream())
                     ),
-                    true);
+                    true
+            );
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -79,7 +81,7 @@ public class EnvironmentSocketThread extends Thread {
             for(int i = 0; i < 5; i++) {
                 try {
                     //establish a connection.
-                    socket = new Socket(host, port);
+                    socket = socketFactory.createNewSocket(host, port);
                     //if connection is successful
                     break;
                 } catch(IOException e) {
@@ -96,13 +98,15 @@ public class EnvironmentSocketThread extends Thread {
         connect();
     }
 
-    public EnvironmentSocketThread() {
-        //default constructor
+    public EnvironmentSocketThread(EnvironmentSocketFactory socketFactory) {
+        this.socketFactory = socketFactory;
     }
 
-    public EnvironmentSocketThread(Socket s) {
+    public EnvironmentSocketThread(EnvironmentSocket socket,
+                                   EnvironmentSocketFactory socketFactory) {
         //assign the local socket
-        this.socket = s;
+        this.socket = socket;
+        this.socketFactory = socketFactory;
     }
 
     public void run() {
