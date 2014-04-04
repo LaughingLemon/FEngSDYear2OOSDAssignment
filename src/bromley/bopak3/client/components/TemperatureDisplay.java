@@ -1,6 +1,7 @@
 package bromley.bopak3.client.components;
 
 import bromley.bopak3.common.EnvironmentTemperature;
+import laughing.lemon.components.LEDPanel;
 
 import java.awt.*;
 
@@ -8,12 +9,12 @@ import static java.lang.Math.abs;
 
 //Panel with LED's on it to show the temperature with
 //convenient function to set the display
-public class TemperatureDisplay extends Panel {
+public class TemperatureDisplay extends LEDDisplayPanel {
 
     public static final String DEGREES_C = "\u00b0C";
     public static final String DEGREES_F = "\u00b0F";
 
-    private LEDPanel minus;
+    private laughing.lemon.components.LEDPanel minus;
     private LEDPanel hundreds;
     private LEDPanel tens;
     private LEDPanel units;
@@ -32,7 +33,7 @@ public class TemperatureDisplay extends Panel {
 
     public TemperatureDisplay() {
         //sets the layout
-        setLayout(LEDPanel.createLayout(5));
+        setLayout(createLayout(5));
         minus = new LEDPanel();
         add(minus);
         hundreds = new LEDPanel();

@@ -2,9 +2,14 @@ package bromley.bopak3.client;
 
 //project and component imports
 
-import bromley.bopak3.client.components.*;
+import bromley.bopak3.client.components.PowerDisplay;
+import bromley.bopak3.client.components.TemperatureDisplay;
+import bromley.bopak3.client.components.TimeDisplay;
 import bromley.bopak3.common.EnvironmentSocketThread;
 import bromley.bopak3.server.EnvironmentSocketServer;
+import laughing.lemon.components.SwitchEvent;
+import laughing.lemon.components.SwitchListener;
+import laughing.lemon.components.ToggleSwitch;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

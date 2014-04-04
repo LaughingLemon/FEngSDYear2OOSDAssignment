@@ -1,13 +1,15 @@
 package bromley.bopak3.client.components;
 //Created by Shaun
 
+import laughing.lemon.components.LEDPanel;
+
 import java.awt.*;
 
 import static java.lang.Math.abs;
 
 //Panel with LED's on it to show the temperature with
 //convenient function to set the display
-public class PowerDisplay extends Panel {
+public class PowerDisplay extends LEDDisplayPanel {
 
     //segments
     private LEDPanel thousands;
@@ -17,7 +19,7 @@ public class PowerDisplay extends Panel {
 
     public PowerDisplay() {
         //set the layout
-        setLayout(LEDPanel.createLayout(5));
+        setLayout(createLayout(5));
         //create the LEDs
         thousands = new LEDPanel();
         add(thousands);

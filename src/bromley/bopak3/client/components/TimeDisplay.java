@@ -1,13 +1,14 @@
 package bromley.bopak3.client.components;
 
-import java.awt.*;
+import laughing.lemon.components.LEDPanel;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 //Panel with LED's on it to show the time with
 //convenient function to set the display
-public class TimeDisplay extends Panel {
+public class TimeDisplay extends LEDDisplayPanel {
 
     private LEDPanel minute10;
     private LEDPanel minute1;
@@ -16,7 +17,7 @@ public class TimeDisplay extends Panel {
 
     public TimeDisplay() {
         //sets the layout
-        setLayout(LEDPanel.createLayout(4));
+        setLayout(createLayout(4));
         //creates the digits
         hour10 = new LEDPanel();
         hour10.setSize(50, 100);
