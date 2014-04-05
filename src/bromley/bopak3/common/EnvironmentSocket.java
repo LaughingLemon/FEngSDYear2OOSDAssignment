@@ -1,14 +1,14 @@
 package bromley.bopak3.common;
 //Created by Shaun
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.PrintWriter;
 
 public interface EnvironmentSocket {
-    public InputStream getInputStream() throws IOException;
+    public BufferedReader getBufferedReader() throws IOException;
 
-    public OutputStream getOutputStream() throws IOException;
+    public PrintWriter getPrintWriter() throws IOException;
 
     public boolean isConnected();
 

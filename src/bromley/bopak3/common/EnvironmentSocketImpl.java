@@ -1,9 +1,7 @@
 package bromley.bopak3.common;
 //Created by Shaun
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 
 //an interface wrapper around a Socket object
@@ -15,12 +13,19 @@ public class EnvironmentSocketImpl implements EnvironmentSocket {
         this.socket = socket;
     }
 
-    public InputStream getInputStream() throws IOException {
-        return socket.getInputStream();
+    @Override
+    public BufferedReader getBufferedReader() throws IOException {
+        return new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
-    public OutputStream getOutputStream() throws IOException {
-        return socket.getOutputStream();
+    @Override
+    public PrintWriter getPrintWriter() throws IOException {
+        return new PrintWriter(
+                new BufferedWriter(
+                        new OutputStreamWriter(socket.getOutputStream())
+                ),
+                true
+        );
     }
 
     public boolean isConnected() {

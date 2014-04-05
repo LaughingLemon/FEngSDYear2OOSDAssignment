@@ -14,7 +14,7 @@ public class EnvironmentSocketThread extends Thread {
     private EnvironmentSocket socket;
     //network socket
     private EnvironmentSocketFactory socketFactory;
-    //readers and writer used by the socket
+    //readers and writer used by the socket thread
     private BufferedReader in;
     private PrintWriter out;
     //status of socket
@@ -45,18 +45,11 @@ public class EnvironmentSocketThread extends Thread {
     }
 
     private void createReaderWriter() {
-        //create the input stream reader from the connected socket
         try {
-            this.in = new BufferedReader(
-                    new InputStreamReader(this.socket.getInputStream())
-            );
-            //create the output stream writer from the connected socket
-            this.out = new PrintWriter(
-                    new BufferedWriter(
-                            new OutputStreamWriter(this.socket.getOutputStream())
-                    ),
-                    true
-            );
+            //attach the input stream reader from the connected socket
+            this.in = this.socket.getBufferedReader();
+            //attach the output stream writer from the connected socket
+            this.out = this.socket.getPrintWriter();
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -110,16 +103,19 @@ public class EnvironmentSocketThread extends Thread {
     }
 
     public void run() {
+        String str;
         try {
             //until the client says END
             while(true) {
                 //read in a line from the input stream
-                String str = in.readLine();
-                //until the END text is sent
-                if(str.equals("END"))
-                    break;
-                //send message to the client class
-                fireMessageHandler(str);
+                if(in != null) {
+                    str = in.readLine();
+                    //until the END text is sent
+                    if(str.equals("END"))
+                        break;
+                    //send message to the client class
+                    fireMessageHandler(str);
+                }
             }
         } catch(IOException e) {
             //ignore any exceptions
