@@ -41,7 +41,7 @@ public class EnvironmentSocketServer extends Thread implements EnvironmentSocket
                     //the only way to un-block this
                     //seems to be to close the server socket
                     EnvironmentSocket socket = serverSocket.accept();
-                    EnvironmentSocketThread socketThread = new EnvironmentSocketThread(socket, socketFactory);
+                    EnvironmentSocketThread socketThread = socketFactory.createSocketThread(socket);
                     //wire the socket event to this class's event handler
                     socketThread.setMessageHandler(messageHandler);
                     //connect to the client

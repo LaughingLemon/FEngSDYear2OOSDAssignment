@@ -18,8 +18,13 @@ public class EnvironmentSocketFactoryImpl implements EnvironmentSocketFactory {
         return new EnvironmentServerSocketImpl(new ServerSocket(port), this);
     }
 
+    public EnvironmentSocketThread createSocketThread(EnvironmentSocket socket) {
+        return new EnvironmentSocketThread(socket, this);
+    }
+
     //wrapper an existing socket
     public EnvironmentSocket wrapperSocket(Socket socket) {
         return new EnvironmentSocketImpl(socket);
     }
+
 }

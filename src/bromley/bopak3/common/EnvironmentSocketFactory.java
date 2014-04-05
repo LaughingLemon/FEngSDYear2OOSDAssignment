@@ -7,4 +7,6 @@ public interface EnvironmentSocketFactory {
     public EnvironmentSocket createNewSocket(String host, int port) throws IOException;
 
     public EnvironmentServerSocket createServerSocket(int port) throws IOException;
+
+    public EnvironmentSocketThread createSocketThread(EnvironmentSocket socket);
 }
