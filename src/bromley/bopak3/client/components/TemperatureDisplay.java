@@ -9,7 +9,7 @@ import static java.lang.Math.abs;
 
 //Panel with LED's on it to show the temperature with
 //convenient function to set the display
-public class TemperatureDisplay extends LEDDisplayPanel {
+public class TemperatureDisplay extends LEDDisplayContainer {
 
     public static final String DEGREES_C = "\u00b0C";
     public static final String DEGREES_F = "\u00b0F";

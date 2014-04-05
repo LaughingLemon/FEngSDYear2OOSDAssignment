@@ -3,7 +3,7 @@ package bromley.bopak3.client.components;
 
 import java.awt.*;
 
-public class LEDDisplayPanel extends Panel {
+public class LEDDisplayContainer extends Panel {
     protected LayoutManager createLayout(int segments) {
         return new GridLayout(1, segments);
     }

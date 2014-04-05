@@ -8,7 +8,7 @@ import java.util.GregorianCalendar;
 
 //Panel with LED's on it to show the time with
 //convenient function to set the display
-public class TimeDisplay extends LEDDisplayPanel {
+public class TimeDisplay extends LEDDisplayContainer {
 
     private LEDPanel minute10;
     private LEDPanel minute1;

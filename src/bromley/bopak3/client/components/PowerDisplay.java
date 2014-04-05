@@ -9,7 +9,7 @@ import static java.lang.Math.abs;
 
 //Panel with LED's on it to show the temperature with
 //convenient function to set the display
-public class PowerDisplay extends LEDDisplayPanel {
+public class PowerDisplay extends LEDDisplayContainer {
 
     //segments
     private LEDPanel thousands;
