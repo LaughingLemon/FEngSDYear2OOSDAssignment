@@ -172,7 +172,7 @@ public class EnvironmentServer {
         this.socketServer = socketServer;
         //message handler to be able to set the temperature
         //and switch on
-        this.socketServer.setMessageHandler(messageHandler);
+        this.socketServer.setMessageHandler(this.messageHandler);
         this.calculations = calculations;
         //set the time interval
         setTimeInterval(timeInterval);

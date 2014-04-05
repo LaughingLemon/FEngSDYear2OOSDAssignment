@@ -1,14 +1,20 @@
-package test;
-
 import bromley.bopak3.common.EnvironmentSocketEvent;
 import bromley.bopak3.common.EnvironmentSocketMessage;
 import bromley.bopak3.common.EnvironmentTemperature;
 import bromley.bopak3.common.EnvironmentTime;
 import bromley.bopak3.server.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.io.StringReader;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+
 //Created by Shaun
+@RunWith(JUnit4.class)
 public class EnvironmentServerTest {
 
     private static void delay(long time) {
@@ -27,8 +33,8 @@ public class EnvironmentServerTest {
         private EnvironmentSocketEvent messageHandler;
 
         public void receiveMessage(String message) {
-            if(messageHandler != null)
-                messageHandler.messageReceived(new EnvironmentSocketMessage(this, message));
+            if(this.messageHandler != null)
+                this.messageHandler.messageReceived(new EnvironmentSocketMessage(this, message));
         }
 
         public void setMessageHandler(EnvironmentSocketEvent messageHandler) {
@@ -52,8 +58,8 @@ public class EnvironmentServerTest {
     //test to see that, given test data, the server outputs
     //the messages to the TCP/IP link, represented by
     //the mock object
-    private static void testServerMessages() {
-        System.out.println("testServerMessages start");
+    @Test
+    public void testServerMessages() {
         //represents the data file
         StringReader sr = new StringReader("Time,Temp,Solar,Wind\n" +
                 "00:00:00,-142.5,9600,4.35\n" +
@@ -61,52 +67,52 @@ public class EnvironmentServerTest {
                 "00:02:00,-155.6,0,46.0\n" +
                 "00:03:00,-160.3,0,257.8");
         //represents the TCP/IP link
-        MockEnvironmentSocketServer mss = new MockEnvironmentSocketServer();
+        MockEnvironmentSocketServer socketServer = spy(new MockEnvironmentSocketServer());
         EnvironmentDataReaderInterface dr = new EnvironmentDataReader();
         dr.loadDataSource(sr);
         EnvironmentCalculations calculations = new EnvironmentCalculations();
-        EnvironmentServer server = new EnvironmentServer(dr, mss, calculations, 5);
+        EnvironmentServer server = new EnvironmentServer(dr, socketServer, calculations, 5);
         //set the required temperature and the initial temperature
         server.setRequestedIndoorTemperature(EnvironmentTemperature.celsiusToFahrenheit(20.0));
         server.setIndoorTemperature(EnvironmentTemperature.celsiusToFahrenheit(20.0));
         server.startClock();
-        delay(60);
+        delay(10);
+        verify(socketServer).sendMessage("OFF,00:00:00,68.0,-142.5,1712.53,9604.35,OFF");
+        verify(socketServer).sendMessage("OFF,00:01:00,67.79,-150.6,1776.71,10.39,OFF");
+        verify(socketServer).sendMessage("OFF,00:02:00,67.57,-155.6,1815.59,46.0,OFF");
         server.setTempControlSwitchedOn(true);
-        delay(60);
+        delay(10);
+        verify(socketServer).sendMessage("ON,00:03:00,67.34,-160.3,1852.0,257.8,OFF");
+        verify(socketServer).sendMessage("ON,00:00:00,67.14,-142.5,1705.58,9604.35,OFF");
         //shut everything down
         server.stopClock();
-        System.out.println("testServerMessages end");
+        verify(socketServer).shutDown();
     }
 
-    private static void testClientMessages() {
-        System.out.println("testClientMessages start");
-        MockEnvironmentSocketServer mss = new MockEnvironmentSocketServer();
+    @Test
+    public void testClientMessages() {
+        MockEnvironmentSocketServer socketServer = spy(new MockEnvironmentSocketServer());
         //doesn't need the data reader
-        EnvironmentServer server = new EnvironmentServer(null, mss, null);
+        EnvironmentServer server = new EnvironmentServer(null, socketServer, null);
         server.setCurrentTime(EnvironmentTime.stringToTime("00:00:00"));
         //the default is off
-        System.out.println("server control setting: " + server.isTempControlSwitchedOn());
-        System.out.println("server indoor temp: " + server.getIndoorTemperature());
-        System.out.println("server window tint: " + server.isWindowTintOn());
+        assertEquals(false, server.isTempControlSwitchedOn());
+        assertEquals(0.00, server.getRequestedIndoorTemperature(), 0.001);
+        assertEquals(false, server.isWindowTintOn());
         //the command goes in here...
-        mss.receiveMessage("ON,23.0,OFF");
+        socketServer.receiveMessage("ON,23.0,OFF");
+        verify(socketServer).sendMessage("ON,00:00:00,0.0,0.0,0.0,0.0,OFF");
         //...and should come out here
-        System.out.println("server control setting: " + server.isTempControlSwitchedOn());
-        System.out.println("server indoor temp: " + server.getIndoorTemperature());
-        System.out.println("server window tint: " + server.isWindowTintOn());
+        assertEquals(true, server.isTempControlSwitchedOn());
+        assertEquals(23.00, server.getRequestedIndoorTemperature(), 0.001);
+        assertEquals(false, server.isWindowTintOn());
         //and switch it off again
-        mss.receiveMessage("OFF,0.0,ON");
+        socketServer.receiveMessage("OFF,0.0,ON");
+        verify(socketServer).sendMessage("OFF,00:00:00,0.0,0.0,0.0,0.0,ON");
         //the temperature should be the same as before
-        System.out.println("server control setting: " + server.isTempControlSwitchedOn());
-        System.out.println("server indoor temp: " + server.getIndoorTemperature());
-        System.out.println("server window tint: " + server.isWindowTintOn());
-        System.out.println("testClientMessages end");
+        assertEquals(false, server.isTempControlSwitchedOn());
+        assertEquals(23.00, server.getRequestedIndoorTemperature(), 0.001);
+        assertEquals(true, server.isWindowTintOn());
     }
 
-    public static void main(String[] args) {
-        System.out.println("EnvironmentServerTest start");
-        testClientMessages();
-        testServerMessages();
-        System.out.println("EnvironmentServerTest end");
-    }
 }
